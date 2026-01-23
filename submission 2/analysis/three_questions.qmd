@@ -1,0 +1,67 @@
+---
+jupyter: ir
+---
+
+```{r}
+library("rmarkdown")
+library("tidyverse")
+library("dplyr")
+```
+
+```{r}
+setwd('/home/ssark38/econ470/a0/work/hwk1')
+```
+
+```{r}
+plan_data <- read_csv("data/plan_data.csv")
+```
+
+```{r}
+table1 <- plan_data %>%
+    distinct(contractid, planid, plan_type) %>%
+    count(plan_type, name = "n_plans")
+
+table1
+```
+
+```{r}
+filtered_plans <- plan_data %>%
+    filter(
+        snp == "No",
+        eghp == "No",
+        !str_detect(planid, "^8")
+    )
+```
+
+```{r}
+updated_table1 <- filtered_plans %>%
+    distinct(contractid, planid, plan_type) %>%
+    count(plan_type, name = "n_plans")
+
+updated_table1
+```
+
+```{r}
+merged_data <- read_csv("data/merged_data.csv")
+```
+
+```{r}
+filtered_plans_2 <- merged_data %>%
+    filter(
+        snp == "No",
+        eghp.x == "No",
+        !str_detect(planid, "^8")
+    )
+```
+
+```{r}
+table2 <- filtered_plans_2 %>%
+  group_by(plan_type) %>%
+  summarise(avg_enrollment = mean(avg_enrollment, na.rm = TRUE),
+           .groups = "drop") %>%
+  arrange(desc(avg_enrollment))
+
+table2
+```
+
+
